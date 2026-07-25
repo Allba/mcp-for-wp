@@ -1,0 +1,31 @@
+name: Validate ability JSON schemas
+
+# Every ability's input_schema/output_schema must be a valid JSON Schema
+# draft 2020-12 document — otherwise the Anthropic API rejects the whole
+# tools array with "400 tools.N.custom.input_schema: JSON schema is invalid"
+# and every MCP client (Claude.ai, Cowork, ChatGPT) that loads the tool
+# breaks. This gate runs the exhaustive source-level check on every push
+# and PR so a bad schema can never ship again.
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'src/**', 'tests/schema/**' ]
+  pull_request:
+    paths: [ 'src/**', 'tests/schema/**' ]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install jsonschema
+      - name: Dump and validate every ability schema
+        run: php tests/schema/dump-schemas.php | python3 tests/schema/validate-schemas.py
