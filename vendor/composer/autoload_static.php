@@ -479,6 +479,7 @@ class ComposerStaticInite1d0ab5189c3bd390fd15808cbbb2adc
         'Tropk\\Mcp\\OAuth\\Endpoints\\RevocationEndpoint' => __DIR__ . '/../..' . '/src/OAuth/Endpoints/RevocationEndpoint.php',
         'Tropk\\Mcp\\OAuth\\Endpoints\\TokenEndpoint' => __DIR__ . '/../..' . '/src/OAuth/Endpoints/TokenEndpoint.php',
         'Tropk\\Mcp\\OAuth\\Endpoints\\WellKnownStaticFiles' => __DIR__ . '/../..' . '/src/OAuth/Endpoints/WellKnownStaticFiles.php',
+        'Tropk\\Mcp\\OAuth\\ScopeGuard' => __DIR__ . '/../..' . '/src/OAuth/ScopeGuard.php',
         'Tropk\\Mcp\\OAuth\\Scopes' => __DIR__ . '/../..' . '/src/OAuth/Scopes.php',
         'Tropk\\Mcp\\OAuth\\Tables' => __DIR__ . '/../..' . '/src/OAuth/Tables.php',
         'Tropk\\Mcp\\OAuth\\Tokens' => __DIR__ . '/../..' . '/src/OAuth/Tokens.php',

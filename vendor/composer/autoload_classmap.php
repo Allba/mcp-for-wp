@@ -439,6 +439,7 @@ return array(
     'Tropk\\Mcp\\OAuth\\Endpoints\\RevocationEndpoint' => $baseDir . '/src/OAuth/Endpoints/RevocationEndpoint.php',
     'Tropk\\Mcp\\OAuth\\Endpoints\\TokenEndpoint' => $baseDir . '/src/OAuth/Endpoints/TokenEndpoint.php',
     'Tropk\\Mcp\\OAuth\\Endpoints\\WellKnownStaticFiles' => $baseDir . '/src/OAuth/Endpoints/WellKnownStaticFiles.php',
+    'Tropk\\Mcp\\OAuth\\ScopeGuard' => $baseDir . '/src/OAuth/ScopeGuard.php',
     'Tropk\\Mcp\\OAuth\\Scopes' => $baseDir . '/src/OAuth/Scopes.php',
     'Tropk\\Mcp\\OAuth\\Tables' => $baseDir . '/src/OAuth/Tables.php',
     'Tropk\\Mcp\\OAuth\\Tokens' => $baseDir . '/src/OAuth/Tokens.php',

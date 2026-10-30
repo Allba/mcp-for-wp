@@ -15,6 +15,10 @@ jobs:
           php-version: ${{ matrix.php }}
       - name: PHP syntax
         run: find src/OAuth tests/security -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Shipped autoloaders
+        run: |
+          php tests/security/autoload.php jetpack
+          php tests/security/autoload.php composer
       - name: Bundled Abilities API
         run: php tests/security/oauth.php
       - name: WordPress 6.9 core Abilities API
