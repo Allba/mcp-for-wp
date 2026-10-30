@@ -1,0 +1,23 @@
+name: OAuth security regressions
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['8.1', '8.3']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+      - name: PHP syntax
+        run: find src/OAuth tests/security -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Bundled Abilities API
+        run: php tests/security/oauth.php
+      - name: WordPress 6.9 core Abilities API
+        run: |
+          curl --fail --silent --show-error --location https://raw.githubusercontent.com/WordPress/WordPress/6.9/wp-includes/abilities-api/class-wp-ability.php -o /tmp/class-wp-ability.php
+          WP_ABILITY_FILE=/tmp/class-wp-ability.php php tests/security/oauth.php

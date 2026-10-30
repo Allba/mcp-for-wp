@@ -7,6 +7,7 @@ use Tropk\Mcp\OAuth\AuthorizationCodes;
 use Tropk\Mcp\OAuth\ClientRegistry;
 use Tropk\Mcp\OAuth\Crypto;
 use Tropk\Mcp\OAuth\Tokens;
+use Tropk\Mcp\OAuth\Scopes;
 
 /**
  * POST /oauth/token. Implements the authorization_code grant (with
@@ -140,7 +141,12 @@ final class TokenEndpoint {
 		}
 
 		// Narrowing the scope on refresh is allowed (OAuth 2.1 §6).
-		$scope = isset( $params['scope'] ) ? (string) $params['scope'] : (string) $row['scope'];
+		$scope = isset( $params['scope'] )
+			? Scopes::narrow( (string) $params['scope'], (string) $row['scope'] )
+			: (string) $row['scope'];
+		if ( null === $scope ) {
+			return new \WP_Error( 'invalid_scope', 'Refresh scope must be a non-empty subset of the original grant.', [ 'status' => 400 ] );
+		}
 
 		// Rotate.
 		$store->revoke_by_refresh( $refresh );

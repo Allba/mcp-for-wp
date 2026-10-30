@@ -54,3 +54,23 @@ Issues + PRs welcome at https://github.com/tropk-ai/wordpress-mcp. If you fork, 
 ## Credits
 
 See `CREDITS.md` for the vendored sources and their authors.
+
+## OAuth security behavior in this fork
+
+OAuth scopes are enforced before each WordPress ability callback, including nested
+calls through the adapter dispatcher. Explicitly read-only abilities require
+`mcp:read`; destructive abilities require `mcp:destructive`; other writes require
+`mcp:write`. WordPress user permissions still apply. Scopes are independent, so
+clients needing reads and writes must request both. This policy depends on the
+accuracy of each ability's annotations; third-party abilities need review.
+
+MCP OAuth tokens cannot authorize other WordPress REST namespaces. Refresh requests
+may preserve or narrow the original grant, never expand it. Both arbitrary-SQL
+abilities are blocked for OAuth clients, including clients with admin scope;
+regex screening is not treated as a SQL security boundary. This blocks remote
+OAuth access to those abilities rather than repairing the SQL parser itself.
+
+Run `php tests/security/oauth.php` for regression checks against the bundled
+Abilities API. CI also runs against WordPress 6.9 core on PHP 8.1 and 8.3.
+A real WordPress staging installation and OAuth client round trip are still
+required before production deployment.

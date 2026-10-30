@@ -14,6 +14,7 @@ final class Bootstrap {
 
 	public function register(): void {
 		( new BearerAuthenticator() )->register();
+		( new ScopeGuard() )->register();
 		// ChatGptCompat intentionally NOT registered. Its 401→JSON-RPC
 		// rewrite breaks Claude.ai's DCR flow even when narrowed to /mcp,
 		// because Claude inspects pieces of the response WP shipped before
