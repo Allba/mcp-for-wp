@@ -1782,6 +1782,10 @@ return array(
 		'version' => 'dev-main',
 		'path'    => $baseDir . '/src/OAuth/Endpoints/WellKnownStaticFiles.php'
 	),
+	'Tropk\\Mcp\\OAuth\\ScopeGuard' => array(
+		'version' => 'dev-main',
+		'path'    => $baseDir . '/src/OAuth/ScopeGuard.php'
+	),
 	'Tropk\\Mcp\\OAuth\\Scopes' => array(
 		'version' => 'dev-main',
 		'path'    => $baseDir . '/src/OAuth/Scopes.php'

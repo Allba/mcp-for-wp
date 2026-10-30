@@ -71,18 +71,33 @@ final class Scopes {
 		return true;
 	}
 
+	/** Validate a refresh request without silently dropping unknown scopes. */
+	public static function narrow( string $requested, string $original ): ?string {
+		$scopes = preg_split( '/\s+/', trim( $requested ) ) ?: [];
+		if ( [] === $scopes || [ '' ] === $scopes ) {
+			return null;
+		}
+		foreach ( $scopes as $scope ) {
+			if ( ! in_array( $scope, self::ALL, true ) || ! in_array( $scope, self::parse( $original ), true ) ) {
+				return null;
+			}
+		}
+		return self::serialize( $scopes );
+	}
+
 	/**
 	 * Maps an ability's annotations to the minimum scope it requires.
 	 *
 	 * @param array<string, mixed> $annotations
 	 */
 	public static function for_annotations( array $annotations ): string {
-		if ( ! empty( $annotations['destructive'] ) ) {
+		// MCP ignores destructive hints for an explicitly read-only tool.
+		if ( true === ( $annotations['readonly'] ?? false ) ) {
+			return self::READ;
+		}
+		if ( true === ( $annotations['destructive'] ?? false ) ) {
 			return self::DESTRUCTIVE;
 		}
-		if ( empty( $annotations['readonly'] ) ) {
-			return self::WRITE;
-		}
-		return self::READ;
+		return self::WRITE;
 	}
 }

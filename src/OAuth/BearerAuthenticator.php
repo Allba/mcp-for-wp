@@ -19,7 +19,7 @@ use Tropk\Mcp\OAuth\Endpoints\MetadataEndpoints;
  */
 final class BearerAuthenticator {
 
-	private const ATTR_TOKEN = 'tropk_mcp_oauth_token_row';
+	public const ATTR_TOKEN = 'tropk_mcp_oauth_token_row';
 
 	private Tokens $tokens;
 
@@ -30,6 +30,7 @@ final class BearerAuthenticator {
 	public function register(): void {
 		add_filter( 'determine_current_user', [ $this, 'determine_user' ], 30 );
 		add_filter( 'rest_authentication_errors', [ $this, 'enforce_scope_and_audience' ], 30 );
+		add_filter( 'rest_pre_dispatch', [ $this, 'restrict_token_routes' ], 1, 3 );
 		add_filter( 'rest_post_dispatch', [ $this, 'add_www_authenticate_on_unauthorized' ], 10, 3 );
 		// Force `no-store` on every response under our MCP namespace. Without
 		// this, URL-keyed edge caches (Cloudflare, Hostinger HCDN, host
@@ -89,18 +90,18 @@ final class BearerAuthenticator {
 			);
 		}
 
-		$route = $_SERVER['REQUEST_URI'] ?? '';
-		if ( is_string( $route ) && preg_match( '#/wp-json/(tropk-mcp|mcp)/#', $route ) ) {
-			$granted = Scopes::parse( (string) ( $row['scope'] ?? '' ) );
-			if ( ! Scopes::contains( $granted, [ Scopes::READ ] ) ) {
-				return new \WP_Error(
-					'tropk_mcp_insufficient_scope',
-					__( 'Token is missing the mcp:read scope.', 'mcp-for-wordpress' ),
-					[ 'status' => 403 ]
-				);
-			}
-		}
+		return $result;
+	}
 
+	/** MCP tokens must never become general WordPress REST credentials. */
+	public function restrict_token_routes( $result, $server, $request ) {
+		if ( ! isset( $GLOBALS[ self::ATTR_TOKEN ] ) ) {
+			return $result;
+		}
+		$route = (string) $request->get_route();
+		if ( ! preg_match( '#^/(tropk-mcp|mcp)/#', $route ) ) {
+			return new \WP_Error( 'tropk_mcp_invalid_resource', 'MCP tokens cannot access other WordPress REST resources.', [ 'status' => 403 ] );
+		}
 		return $result;
 	}
 
